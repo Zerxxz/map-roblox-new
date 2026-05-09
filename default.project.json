@@ -1,0 +1,73 @@
+{
+    "name": "HauntedAbandonedBuilding",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "Shared": {
+                "$className": "Folder",
+                "Config": {
+                    "$path": "src/ReplicatedStorage/Shared/Config.lua"
+                },
+                "RemoteEvents": {
+                    "$path": "src/ReplicatedStorage/Shared/RemoteEvents.lua"
+                },
+                "Utils": {
+                    "$path": "src/ReplicatedStorage/Shared/Utils.lua"
+                }
+            }
+        },
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            "Main": {
+                "$path": "src/ServerScriptService/Main.server.lua"
+            },
+            "MapGenerator": {
+                "$path": "src/ServerScriptService/MapGenerator.lua"
+            },
+            "GhostSystem": {
+                "$path": "src/ServerScriptService/GhostSystem.lua"
+            },
+            "QuestSystem": {
+                "$path": "src/ServerScriptService/QuestSystem.lua"
+            },
+            "PuzzleSystem": {
+                "$path": "src/ServerScriptService/PuzzleSystem.lua"
+            },
+            "AllianceSystem": {
+                "$path": "src/ServerScriptService/AllianceSystem.lua"
+            },
+            "ToolGiver": {
+                "$path": "src/ServerScriptService/ToolGiver.lua"
+            }
+        },
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "ClientMain": {
+                    "$path": "src/StarterPlayer/StarterPlayerScripts/ClientMain.client.lua"
+                }
+            }
+        },
+        "Lighting": {
+            "$className": "Lighting",
+            "$properties": {
+                "Ambient": [15, 15, 20],
+                "OutdoorAmbient": [25, 25, 30],
+                "Brightness": 1,
+                "ClockTime": 0,
+                "FogEnd": 80,
+                "FogStart": 5,
+                "FogColor": [20, 20, 25],
+                "GlobalShadows": true
+            }
+        },
+        "Workspace": {
+            "$className": "Workspace",
+            "$properties": {
+                "Gravity": 196.2
+            }
+        }
+    }
+}
