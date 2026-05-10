@@ -28,9 +28,9 @@ local Config = {
 		WallThickness     = 1,
 		CorridorWidth     = 8,
 		Origin            = Vector3.new(0, 0, 0),
-		WallColor         = Color3.fromRGB(70, 60, 50),
-		FloorColor        = Color3.fromRGB(50, 40, 35),
-		CeilingColor      = Color3.fromRGB(35, 30, 28),
+		WallColor         = Color3.fromRGB(110, 95, 80),
+		FloorColor        = Color3.fromRGB(85, 70, 55),
+		CeilingColor      = Color3.fromRGB(60, 52, 45),
 		WallMaterial      = Enum.Material.Brick,
 		FloorMaterial     = Enum.Material.WoodPlanks,
 		CeilingMaterial   = Enum.Material.Concrete,
@@ -43,10 +43,10 @@ local Config = {
 	},
 	Tool = {
 		FlashlightName       = "Flashlight",
-		FlashlightRange      = 60,
-		FlashlightAngle      = 45,
-		FlashlightBrightness = 2,
-		FlashlightColor      = Color3.fromRGB(255, 240, 200),
+		FlashlightRange      = 90,
+		FlashlightAngle      = 60,
+		FlashlightBrightness = 4,
+		FlashlightColor      = Color3.fromRGB(255, 245, 220),
 	},
 	Ghost = {
 		JumpscareIntervalMin = 25,
@@ -168,42 +168,46 @@ print("[HauntedServer] Remotes siap")
 -- LIGHTING & ATMOSPHERE
 -- ============================================================
 local function setupLighting()
-	Lighting.Ambient = Color3.fromRGB(15, 15, 20)
-	Lighting.OutdoorAmbient = Color3.fromRGB(25, 25, 30)
-	Lighting.Brightness = 1
-	Lighting.ClockTime = 0
-	Lighting.FogEnd = 80
-	Lighting.FogStart = 5
-	Lighting.FogColor = Color3.fromRGB(20, 20, 25)
+	-- Lebih terang tapi tetap dingin/mencekam
+	Lighting.Ambient = Color3.fromRGB(55, 55, 65)
+	Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 80)
+	Lighting.Brightness = 2
+	Lighting.ClockTime = 5.5         -- fajar redup, bukan tengah malam pekat
+	Lighting.ExposureCompensation = 0.3
 	Lighting.GlobalShadows = true
 
-	if not Lighting:FindFirstChildOfClass("Atmosphere") then
-		local atmos = Instance.new("Atmosphere")
-		atmos.Density = 0.6
-		atmos.Offset = 0.25
-		atmos.Color = Color3.fromRGB(60, 60, 70)
-		atmos.Decay = Color3.fromRGB(30, 30, 40)
-		atmos.Glare = 0
-		atmos.Haze = 2
-		atmos.Parent = Lighting
-	end
+	-- Fog lebih tipis & jauh supaya ruangan tidak kabut total
+	Lighting.FogEnd = 260
+	Lighting.FogStart = 40
+	Lighting.FogColor = Color3.fromRGB(70, 75, 90)
 
-	if not Lighting:FindFirstChild("HorrorColor") then
-		local cc = Instance.new("ColorCorrectionEffect")
-		cc.Name = "HorrorColor"
-		cc.Brightness = -0.15
-		cc.Contrast = 0.15
-		cc.Saturation = -0.35
-		cc.TintColor = Color3.fromRGB(200, 220, 255)
-		cc.Parent = Lighting
-	end
+	local existingAtmos = Lighting:FindFirstChildOfClass("Atmosphere")
+	if existingAtmos then existingAtmos:Destroy() end
+	local atmos = Instance.new("Atmosphere")
+	atmos.Density = 0.25             -- sebelumnya 0.6 (terlalu pekat)
+	atmos.Offset = 0.1
+	atmos.Color = Color3.fromRGB(140, 150, 170)
+	atmos.Decay = Color3.fromRGB(90, 95, 110)
+	atmos.Glare = 0
+	atmos.Haze = 0.8
+	atmos.Parent = Lighting
 
-	if not Lighting:FindFirstChild("HorrorBlur") then
-		local b = Instance.new("BlurEffect")
-		b.Name = "HorrorBlur"
-		b.Size = 4
-		b.Parent = Lighting
-	end
+	local oldCC = Lighting:FindFirstChild("HorrorColor")
+	if oldCC then oldCC:Destroy() end
+	local cc = Instance.new("ColorCorrectionEffect")
+	cc.Name = "HorrorColor"
+	cc.Brightness = 0                -- jangan kurangi brightness lagi
+	cc.Contrast = 0.1
+	cc.Saturation = -0.2
+	cc.TintColor = Color3.fromRGB(220, 230, 245)
+	cc.Parent = Lighting
+
+	local oldBlur = Lighting:FindFirstChild("HorrorBlur")
+	if oldBlur then oldBlur:Destroy() end
+	local b = Instance.new("BlurEffect")
+	b.Name = "HorrorBlur"
+	b.Size = 0                       -- tidak blur default, hanya saat hantu dekat
+	b.Parent = Lighting
 end
 
 local function setupAmbientSounds()
@@ -385,22 +389,51 @@ local function buildRoom(parent, center, size, hasDoorN, hasDoorS, hasDoorE, has
 	if (not doorPart) and hasDoorE then doorPart = placeDoor("Z",  1) end
 	if (not doorPart) and hasDoorW then doorPart = placeDoor("Z", -1) end
 
-	local bulb = createPart({
-		Name = "BrokenBulb", Size = Vector3.new(1.2, 0.4, 1.2),
-		CFrame = CFrame.new(center + Vector3.new(0, halfY - 1, 0)),
-		Color = Color3.fromRGB(180, 170, 120), Material = Enum.Material.Neon,
-		Transparency = 0.2, CanCollide = false,
-	})
-	bulb.Parent = roomModel
-	local pl = Instance.new("PointLight")
-	pl.Range = 14
-	pl.Brightness = 0.8
-	pl.Color = Color3.fromRGB(255, 220, 170)
-	pl.Parent = bulb
+	-- Lampu plafon: 2 titik untuk ruangan besar, lebih terang, kedipan sangat halus
+	local function makeBulb(offsetX, offsetZ)
+		local bulb = createPart({
+			Name = "CeilingBulb", Size = Vector3.new(1.2, 0.4, 1.2),
+			CFrame = CFrame.new(center + Vector3.new(offsetX, halfY - 1, offsetZ)),
+			Color = Color3.fromRGB(255, 240, 210), Material = Enum.Material.Neon,
+			Transparency = 0.1, CanCollide = false,
+		})
+		bulb.Parent = roomModel
+		local pl = Instance.new("PointLight")
+		pl.Range = 28                -- sebelumnya 14
+		pl.Brightness = 2.2          -- sebelumnya 0.8
+		pl.Color = Color3.fromRGB(255, 230, 190)
+		pl.Shadows = false           -- biar lebih terang, tidak terblok perabot
+		pl.Parent = bulb
+		-- Kedipan halus: brightness bervariasi, tidak benar-benar mati
+		task.spawn(function()
+			while bulb.Parent do
+				pl.Brightness = 1.9 + rng:NextNumber(0, 0.6)
+				task.wait(rng:NextNumber(0.3, 1.2))
+			end
+		end)
+		return bulb
+	end
+
+	makeBulb(-size.X * 0.25, 0)
+	makeBulb( size.X * 0.25, 0)
+
+	-- Jarang-jarang salah satu lampu sepenuhnya mati (efek horror singkat)
 	task.spawn(function()
-		while bulb.Parent do
-			pl.Enabled = rng:NextNumber() > 0.25
-			task.wait(rng:NextNumber(0.1, 0.9))
+		while roomModel.Parent do
+			task.wait(rng:NextNumber(20, 45))
+			local bulbs = {}
+			for _, c in ipairs(roomModel:GetChildren()) do
+				if c.Name == "CeilingBulb" then table.insert(bulbs, c) end
+			end
+			if #bulbs > 0 then
+				local b = bulbs[rng:NextInteger(1, #bulbs)]
+				local l = b:FindFirstChildOfClass("PointLight")
+				if l then
+					l.Enabled = false
+					task.wait(rng:NextNumber(0.5, 1.5))
+					l.Enabled = true
+				end
+			end
 		end
 	end)
 

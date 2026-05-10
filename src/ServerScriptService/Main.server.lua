@@ -22,44 +22,45 @@ print("[HauntedBuilding] Booting server...")
 
 -- ===== LIGHTING & ATMOSPHERE =====
 local function setupLighting()
-	Lighting.Ambient = Color3.fromRGB(15, 15, 20)
-	Lighting.OutdoorAmbient = Color3.fromRGB(25, 25, 30)
-	Lighting.Brightness = 1
-	Lighting.ClockTime = 0 -- malam
-	Lighting.FogEnd = 80
-	Lighting.FogStart = 5
-	Lighting.FogColor = Color3.fromRGB(20, 20, 25)
+	Lighting.Ambient = Color3.fromRGB(55, 55, 65)
+	Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 80)
+	Lighting.Brightness = 2
+	Lighting.ClockTime = 5.5
+	Lighting.ExposureCompensation = 0.3
+	Lighting.FogEnd = 260
+	Lighting.FogStart = 40
+	Lighting.FogColor = Color3.fromRGB(70, 75, 90)
 	Lighting.GlobalShadows = true
 
 	-- Atmosphere effect
-	if not Lighting:FindFirstChildOfClass("Atmosphere") then
-		local atmos = Instance.new("Atmosphere")
-		atmos.Density = 0.6
-		atmos.Offset = 0.25
-		atmos.Color = Color3.fromRGB(60, 60, 70)
-		atmos.Decay = Color3.fromRGB(30, 30, 40)
-		atmos.Glare = 0
-		atmos.Haze = 2
-		atmos.Parent = Lighting
-	end
+	local existing = Lighting:FindFirstChildOfClass("Atmosphere")
+	if existing then existing:Destroy() end
+	local atmos = Instance.new("Atmosphere")
+	atmos.Density = 0.25
+	atmos.Offset = 0.1
+	atmos.Color = Color3.fromRGB(140, 150, 170)
+	atmos.Decay = Color3.fromRGB(90, 95, 110)
+	atmos.Glare = 0
+	atmos.Haze = 0.8
+	atmos.Parent = Lighting
 
-	-- ColorCorrection biar terasa "horror"
-	if not Lighting:FindFirstChild("HorrorColor") then
-		local cc = Instance.new("ColorCorrectionEffect")
-		cc.Name = "HorrorColor"
-		cc.Brightness = -0.15
-		cc.Contrast = 0.15
-		cc.Saturation = -0.35
-		cc.TintColor = Color3.fromRGB(200, 220, 255)
-		cc.Parent = Lighting
-	end
+	-- ColorCorrection biar terasa "horror" tapi tidak menggelapkan
+	local oldCC = Lighting:FindFirstChild("HorrorColor")
+	if oldCC then oldCC:Destroy() end
+	local cc = Instance.new("ColorCorrectionEffect")
+	cc.Name = "HorrorColor"
+	cc.Brightness = 0
+	cc.Contrast = 0.1
+	cc.Saturation = -0.2
+	cc.TintColor = Color3.fromRGB(220, 230, 245)
+	cc.Parent = Lighting
 
-	if not Lighting:FindFirstChild("HorrorBlur") then
-		local b = Instance.new("BlurEffect")
-		b.Name = "HorrorBlur"
-		b.Size = 4
-		b.Parent = Lighting
-	end
+	local oldBlur = Lighting:FindFirstChild("HorrorBlur")
+	if oldBlur then oldBlur:Destroy() end
+	local b = Instance.new("BlurEffect")
+	b.Name = "HorrorBlur"
+	b.Size = 0
+	b.Parent = Lighting
 end
 
 -- ===== AMBIENT SOUNDS (server-owned, 3D global) =====

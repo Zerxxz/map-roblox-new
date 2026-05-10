@@ -213,27 +213,38 @@ local function buildRoom(
 
 	-- Lampu rusak (kedip-kedip) di langit-langit
 	local bulb = Utils.createPart({
-		Name = "BrokenBulb",
+		Name = "CeilingBulb",
 		Size = Vector3.new(1.2, 0.4, 1.2),
 		CFrame = CFrame.new(center + Vector3.new(0, halfY - 1, 0)),
-		Color = Color3.fromRGB(180, 170, 120),
+		Color = Color3.fromRGB(255, 240, 210),
 		Material = Enum.Material.Neon,
-		Transparency = 0.2,
+		Transparency = 0.1,
 		CanCollide = false,
 	})
 	bulb.Parent = roomModel
 
 	local pl = Instance.new("PointLight")
-	pl.Range = 14
-	pl.Brightness = 0.8
-	pl.Color = Color3.fromRGB(255, 220, 170)
+	pl.Range = 28
+	pl.Brightness = 2.2
+	pl.Color = Color3.fromRGB(255, 230, 190)
+	pl.Shadows = false
 	pl.Parent = bulb
 
-	-- Kedip-kedip
+	-- Kedipan halus saja (brightness variation, jarang mati total)
 	task.spawn(function()
 		while bulb.Parent do
-			pl.Enabled = rng:NextNumber() > 0.25
-			task.wait(rng:NextNumber(0.1, 0.9))
+			pl.Brightness = 1.9 + rng:NextNumber(0, 0.6)
+			task.wait(rng:NextNumber(0.3, 1.2))
+		end
+	end)
+
+	-- Sesekali mati total singkat untuk efek horror
+	task.spawn(function()
+		while bulb.Parent do
+			task.wait(rng:NextNumber(20, 45))
+			pl.Enabled = false
+			task.wait(rng:NextNumber(0.5, 1.5))
+			pl.Enabled = true
 		end
 	end)
 

@@ -12,9 +12,9 @@ Config.Map = {
 	WallThickness       = 1,
 	CorridorWidth       = 8,
 	Origin              = Vector3.new(0, 0, 0),
-	WallColor           = Color3.fromRGB(70, 60, 50),
-	FloorColor          = Color3.fromRGB(50, 40, 35),
-	CeilingColor        = Color3.fromRGB(35, 30, 28),
+	WallColor           = Color3.fromRGB(110, 95, 80),
+	FloorColor          = Color3.fromRGB(85, 70, 55),
+	CeilingColor        = Color3.fromRGB(60, 52, 45),
 	WallMaterial        = Enum.Material.Brick,
 	FloorMaterial       = Enum.Material.WoodPlanks,
 	CeilingMaterial     = Enum.Material.Concrete,
@@ -32,10 +32,10 @@ Config.Quest = {
 -- ========= TOOL =========
 Config.Tool = {
 	FlashlightName      = "Flashlight",
-	FlashlightRange     = 60,
-	FlashlightAngle     = 45,
-	FlashlightBrightness = 2,
-	FlashlightColor     = Color3.fromRGB(255, 240, 200),
+	FlashlightRange     = 90,
+	FlashlightAngle     = 60,
+	FlashlightBrightness = 4,
+	FlashlightColor     = Color3.fromRGB(255, 245, 220),
 }
 
 -- ========= GHOST =========
